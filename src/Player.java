@@ -1,9 +1,42 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Player {
-    String name;
-    int health;
+
+
+public class Player extends Entity {
+    private int hp;
+    private int attack;
+
+    public Player() {
+        this.hp = 20;
+        this.attack = 5;
+    }
+
+    public int getHP() {
+        return hp;
+    }
+
+    public void takeDamage(int damage) {
+        hp -= damage;
+        System.out.println("Du tog " + damage + " skada! HP kvar: " + hp);
+    }
+
+    public int getAttack() {
+        return attack;
+    }
+
+    public boolean isAlive() {
+        return hp > 0;
+    }
+}
+
+
+
+
+/*public class Player extends Entity {
+
+    String playerName = name;
+
     ArrayList<Item> inventory = new ArrayList<Item>();
 
     public Player() {
@@ -11,7 +44,7 @@ public class Player {
     }
 
     public String getUsername() {
-        return name;
+        return playerName;
     }
 
     public void setUser() {
@@ -24,6 +57,9 @@ public class Player {
             input = scanner.nextLine();
         }
         System.out.println("You succesfully created a username: " + input);
-        name = input;
+        playerName = input;
     }
-}
+    public void attack(){
+
+    }
+}*/
