@@ -1,5 +1,5 @@
 public class Spider extends Monster {
-    public Spider(int tierNumber) {
-        super(tierNumber);
+    public Spider(int tier) {
+        super(tier);
     }
 }

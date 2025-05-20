@@ -3,112 +3,107 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Dungeon dungeon = new Dungeon(5); // 5 rum genereras
+        Dungeon dungeon = new Dungeon(5);
         Player player = new Player();
-        boolean running = true;
 
-        System.out.println("Dungeon med 5 rum genererades!");
-        System.out.println("Du startar i rum 0.");
+        System.out.println("Äventyret börjar! Du har " +
+                player.getHP() + " HP och attack " +
+                player.getAttack() + ".");
+        System.out.println("Du går in i en dungeon med " +
+                dungeon.getRoomCount() + " rum...\n");
 
-        while (running) {
-            System.out.println("\n=== MENY ===");
-            System.out.println("1. Visa rum du är i");
-            System.out.println("2. Visa monster i nuvarande rum");
-            System.out.println("3. Gå till nästa rum");
-            System.out.println("4. Gå till föregående rum");
-            System.out.println("5. Lista alla rum");
-            System.out.println("6. Avsluta");
-            System.out.println("7. Slåss mot första monstret i rummet");
-            System.out.println("8. Visa items i rummet");
-            System.out.print("Välj: ");
+        for (int i = 0; i < dungeon.getRoomCount(); i++) {
+            Room room = dungeon.getRoom(i);
+            System.out.println("Du går in i rum " + i +
+                    " (Svårighetsgrad: " + room.difficulty + ")");
+            System.out.println(room.description);
+
+            // Val innan strid
+            System.out.println("\nVad vill du göra?");
+            System.out.println("1. Gå till attack mot monster");
+            System.out.println("2. Drick potion (om du har någon)");
+            System.out.println("3. Fly från dungeonen");
+            System.out.print("Ditt val: ");
             String choice = scanner.nextLine();
 
-            switch (choice) {
-                case "1":
-                    System.out.println("Du är i rum " + dungeon.getPlayerPosition());
-                    break;
-
-                case "2":
-                    Room currentRoom = dungeon.getCurrentRoom();
-                    if (currentRoom.monsters.isEmpty()) {
-                        System.out.println("Inga monster här.");
-                    } else {
-                        System.out.println("Monster i rummet:");
-                        for (Monster m : currentRoom.monsters) {
-                            System.out.println("- " + m);
-                        }
-                    }
-                    break;
-
-                case "3":
-                    dungeon.moveToNextRoom();
-                    break;
-
-                case "4":
-                    dungeon.moveToPreviousRoom();
-                    break;
-
-                case "5":
-                    dungeon.printAllRooms();
-                    break;
-
-                case "6":
-                    System.out.println("Avslutar...");
-                    running = false;
-                    break;
-                case "7":
-                    Room fightRoom = dungeon.getCurrentRoom();
-                    if (fightRoom.monsters.isEmpty()) {
-                        System.out.println("Inga monster här!");
-                    } else {
-                        Monster monster = fightRoom.monsters.get(0);
-                        System.out.println("Du börjar slåss mot en " + monster.getClass().getSimpleName());
-
-                        while (player.isAlive() && monster.isAlive()) {
-                            // Spelaren attackerar
-                            monster.takeDamage(player.getAttack());
-
-                            // Monster attackerar om det lever
-                            if (monster.isAlive()) {
-                                player.takeDamage(monster.getAttack());
-                            }
-                        }
-
-                        if (!monster.isAlive()) {
-                            System.out.println("Du besegrade " + monster.getClass().getSimpleName() + "!");
-                            fightRoom.monsters.remove(monster);
-                        } else {
-                            System.out.println("Du dog... Spelet är över.");
-                            running = false;
-                        }
-                        if (!monster.isAlive()) {
-                            System.out.println("Du besegrade " + monster.getClass().getSimpleName() + "!");
-                            fightRoom.monsters.remove(monster);
-
-                            // Om rummet är klart – droppa loot
-                            if (fightRoom.monsters.isEmpty() && fightRoom.roomItems.isEmpty()) {
-                                fightRoom.dropLoot();
-                            }
-                        }
-
-                    }
-                    break;
-                case "8":
-                    Room itemRoom = dungeon.getCurrentRoom();
-                    if (itemRoom.roomItems.isEmpty()) {
-                        System.out.println("Det finns inga items i detta rum.");
-                    } else {
-                        System.out.println("Items i rummet:");
-                        for (Item item : itemRoom.roomItems) {
-                            System.out.println("- " + item);
-                        }
-                    }
-                    break;
-                default:
-                    System.out.println("Ogiltigt val!");
+            if (choice.equals("3")) {
+                System.out.println("Du valde att fly. Äventyret avslutas.");
+                scanner.close();
+                return;
+            } else if (choice.equals("2")) {
+                if (player.hasPotion()) {
+                    player.usePotion();
+                } else {
+                    System.out.println("Ingen potion i inventariet!");
+                }
             }
+
+            // Strid mot alla monster i rummet
+            while (!room.monsters.isEmpty() && player.isAlive()) {
+                Monster monster = room.monsters.get(0);
+                System.out.println("\n Ett " +
+                        monster.getClass().getSimpleName() +
+                        " dyker upp! (HP: " + monster.getHP() + ")");
+
+                System.out.println("Välj handling:");
+                System.out.println("1. Attackera");
+                System.out.println("2. Drick potion");
+                System.out.println("3. Fly");
+                System.out.print("Ditt val: ");
+                String action = scanner.nextLine();
+
+                if (action.equals("3")) {
+                    System.out.println("Du flydde från striden! Spelet avslutas.");
+                    scanner.close();
+                    return;
+                } else if (action.equals("2")) {
+                    if (player.hasPotion()) {
+                        player.usePotion();
+                        continue;
+                    } else {
+                        System.out.println("Ingen potion kvar!");
+                        continue;
+                    }
+                }
+
+                // Attack-fas
+                monster.takeDamage(player.getAttack());
+                if (!monster.isAlive()) {
+                    System.out.println("Du besegrade " +
+                            monster.getClass().getSimpleName() + "!");
+                    room.monsters.remove(monster);
+                    break;
+                }
+
+                // Monster retaliates
+                player.takeDamage(monster.getAttack());
+                if (!player.isAlive()) {
+                    System.out.println("Du dog! Spelet är över.");
+                    scanner.close();
+                    return;
+                }
+            }
+
+            // Efter striden: loot
+            if (room.monsters.isEmpty()) {
+                System.out.println("\nDu rensade rummet!");
+                room.dropLoot();
+                room.printLoot();
+                System.out.print("Vill du plocka upp allt? (j/n): ");
+                String lootChoice = scanner.nextLine();
+                if (lootChoice.equalsIgnoreCase("j")) {
+                    for (Item item : room.roomItems) {
+                        player.addItem(item);
+                        System.out.println("Du plockade upp: " + item);
+                    }
+                    room.roomItems.clear();
+                }
+            }
+
+            System.out.println("\n----- Du går vidare till nästa rum -----\n");
         }
 
+        System.out.println("Du klarade dungeonen! Grattis!");
         scanner.close();
     }
 }

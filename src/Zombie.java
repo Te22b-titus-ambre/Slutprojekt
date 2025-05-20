@@ -1,5 +1,5 @@
 public class Zombie extends Monster {
-    public Zombie(int tierNumber) {
-        super(tierNumber);
+    public Zombie(int tier) {
+        super(tier);
     }
 }

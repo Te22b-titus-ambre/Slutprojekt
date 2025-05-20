@@ -1,5 +1,5 @@
 public class Weapon extends Item {
-    int attackBonus;
+    private int attackBonus;
 
     public Weapon(String name, int attackBonus) {
         super(name);

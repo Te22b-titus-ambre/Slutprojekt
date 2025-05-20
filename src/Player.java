@@ -1,65 +1,56 @@
 import java.util.ArrayList;
-import java.util.Scanner;
-
-
 
 public class Player extends Entity {
-    private int hp;
-    private int attack;
-
-    public Player() {
-        this.hp = 20;
-        this.attack = 5;
-    }
+    private int hp = 20;
+    private int attack = 5;
+    private ArrayList<Item> inventory = new ArrayList<>();
 
     public int getHP() {
         return hp;
-    }
-
-    public void takeDamage(int damage) {
-        hp -= damage;
-        System.out.println("Du tog " + damage + " skada! HP kvar: " + hp);
     }
 
     public int getAttack() {
         return attack;
     }
 
+    public void takeDamage(int dmg) {
+        hp -= dmg;
+        System.out.println("Du tog " + dmg + " skada! HP kvar: " + hp);
+    }
+
     public boolean isAlive() {
         return hp > 0;
     }
-}
 
-
-
-
-/*public class Player extends Entity {
-
-    String playerName = name;
-
-    ArrayList<Item> inventory = new ArrayList<Item>();
-
-    public Player() {
-        setUser();
+    public void heal(int amt) {
+        hp = Math.min(hp + amt, 20);
     }
 
-    public String getUsername() {
-        return playerName;
+    public void upgradeAttack(int bonus) {
+        attack += bonus;
     }
 
-    public void setUser() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Write username:");
-        String input = scanner.nextLine();
+    public boolean hasPotion() {
+        return inventory.stream().anyMatch(i -> i instanceof Potion);
+    }
 
-        while (input.length() > 30 ||input == null || input.contains(" ")) {
-            System.out.println("try again.");
-            input = scanner.nextLine();
+    public void usePotion() {
+        for (Item i : inventory) {
+            if (i instanceof Potion) {
+                Potion p = (Potion) i;
+                heal(p.getHealAmount());
+                System.out.println(
+                        "Du dricker " + p.getName() +
+                                " och får " + p.getHealAmount() +
+                                " HP! Nuvarande HP: " + hp
+                );
+                inventory.remove(i);
+                return;
+            }
         }
-        System.out.println("You succesfully created a username: " + input);
-        playerName = input;
     }
-    public void attack(){
 
+    public void addItem(Item item) {
+        inventory.add(item);
     }
-}*/
+}

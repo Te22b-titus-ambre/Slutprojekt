@@ -1,5 +1,2 @@
-public class Entity {
-    int health = 100;
-    String name;
-
+public abstract class Entity {
 }
