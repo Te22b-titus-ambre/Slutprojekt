@@ -1,33 +1,29 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class Player extends Entity {
-    private int hp = 20;
-    private int attack = 5;
-    private ArrayList<Item> inventory = new ArrayList<>();
+    private List<Item> inventory = new ArrayList<>();
+
+    public Player() {
+        super(20, 5);
+    }
 
     public int getHP() {
-        return hp;
+        return super.getHP();
     }
 
     public int getAttack() {
-        return attack;
+        return super.getAttack();
     }
 
-    public void takeDamage(int dmg) {
-        hp -= dmg;
-        System.out.println("Du tog " + dmg + " skada! HP kvar: " + hp);
-    }
-
-    public boolean isAlive() {
-        return hp > 0;
-    }
-
-    public void heal(int amt) {
-        hp = Math.min(hp + amt, 20);
+    public void heal(int amount) {
+        hp = Math.min(hp + amount, 20);
+        System.out.println("🧪 Du helar " + amount + " HP. Nuvarande HP: " + hp);
     }
 
     public void upgradeAttack(int bonus) {
         attack += bonus;
+        System.out.println("🗡️ Din attack ökar med " + bonus + ". Nuvarande attack: " + attack);
     }
 
     public boolean hasPotion() {
@@ -39,18 +35,15 @@ public class Player extends Entity {
             if (i instanceof Potion) {
                 Potion p = (Potion) i;
                 heal(p.getHealAmount());
-                System.out.println(
-                        "Du dricker " + p.getName() +
-                                " och får " + p.getHealAmount() +
-                                " HP! Nuvarande HP: " + hp
-                );
                 inventory.remove(i);
                 return;
             }
         }
+        System.out.println("Ingen potion i inventariet!");
     }
 
     public void addItem(Item item) {
         inventory.add(item);
+        System.out.println("➕ Du plockade upp: " + item);
     }
 }

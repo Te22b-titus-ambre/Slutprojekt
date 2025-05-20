@@ -18,7 +18,6 @@ public class Main {
                     " (Svårighetsgrad: " + room.difficulty + ")");
             System.out.println(room.description);
 
-            // Val innan strid
             System.out.println("\nVad vill du göra?");
             System.out.println("1. Gå till attack mot monster");
             System.out.println("2. Drick potion (om du har någon)");
@@ -38,12 +37,11 @@ public class Main {
                 }
             }
 
-            // Strid mot alla monster i rummet
-            while (!room.monsters.isEmpty() && player.isAlive()) {
-                Monster monster = room.monsters.get(0);
+            while (!room.entities.isEmpty() && player.isAlive()) {
+                Entity entity = room.entities.get(0);
                 System.out.println("\n Ett " +
-                        monster.getClass().getSimpleName() +
-                        " dyker upp! (HP: " + monster.getHP() + ")");
+                        entity.getClass().getSimpleName() +
+                        " dyker upp! (HP: " + entity.getHP() + ")");
 
                 System.out.println("Välj handling:");
                 System.out.println("1. Attackera");
@@ -66,17 +64,17 @@ public class Main {
                     }
                 }
 
-                // Attack-fas
-                monster.takeDamage(player.getAttack());
-                if (!monster.isAlive()) {
-                    System.out.println("Du besegrade " +
-                            monster.getClass().getSimpleName() + "!");
-                    room.monsters.remove(monster);
-                    break;
+                player.attack(entity);
+
+                if (entity.isAlive()) {
+                    entity.attack(player);
                 }
 
-                // Monster retaliates
-                player.takeDamage(monster.getAttack());
+                if (!entity.isAlive()) {
+                    System.out.println("✅ Du besegrade " +
+                            entity.getClass().getSimpleName() + "!");
+                    room.entities.remove(entity);
+                }
                 if (!player.isAlive()) {
                     System.out.println("Du dog! Spelet är över.");
                     scanner.close();
@@ -84,17 +82,16 @@ public class Main {
                 }
             }
 
-            // Efter striden: loot
-            if (room.monsters.isEmpty()) {
+            if (room.entities.isEmpty()) {
                 System.out.println("\nDu rensade rummet!");
                 room.dropLoot();
                 room.printLoot();
+
                 System.out.print("Vill du plocka upp allt? (j/n): ");
                 String lootChoice = scanner.nextLine();
                 if (lootChoice.equalsIgnoreCase("j")) {
                     for (Item item : room.roomItems) {
                         player.addItem(item);
-                        System.out.println("Du plockade upp: " + item);
                     }
                     room.roomItems.clear();
                 }
@@ -103,7 +100,7 @@ public class Main {
             System.out.println("\n----- Du går vidare till nästa rum -----\n");
         }
 
-        System.out.println("Du klarade dungeonen! Grattis!");
+        System.out.println(" Du klarade dungeonen! Grattis!");
         scanner.close();
     }
 }

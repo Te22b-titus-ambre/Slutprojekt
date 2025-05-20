@@ -1,21 +1,17 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class Dungeon {
-    private ArrayList<Room> rooms = new ArrayList<>();
-    private int playerPosition = 0;
+    private List<Room> rooms = new ArrayList<>();
 
     public Dungeon(int numberOfRooms) {
         for (int i = 0; i < numberOfRooms; i++) {
-            Room room = new Room();
-            room.GenerateMonster();
-            rooms.add(room);
+            rooms.add(new Room());
         }
     }
 
     public Room getRoom(int index) {
-        if (index >= 0 && index < rooms.size()) {
-            return rooms.get(index);
-        }
+        if (index >= 0 && index < rooms.size()) return rooms.get(index);
         return null;
     }
 

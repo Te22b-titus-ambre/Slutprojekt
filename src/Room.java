@@ -1,39 +1,32 @@
 import java.util.ArrayList;
+import java.util.List;
 
 public class Room {
-    public ArrayList<Monster> monsters = new ArrayList<>();
-    public ArrayList<Item> roomItems = new ArrayList<>();
-    public String roomName;
+    public List<Entity> entities = new ArrayList<>();
+    public List<Item> roomItems = new ArrayList<>();
     public String description;
     public int difficulty;
 
     public Room() {
-        setDifficulty();
-        this.roomName = "Rum (lvl " + difficulty + ")";
+        difficulty = (int)(Math.random() * 3) + 1;
         this.description = "Ett rum av svårighetsgrad " + difficulty + ".";
+        generateEntities();
     }
 
-    private void setDifficulty() {
-        difficulty = (int)(Math.random() * 3) + 1; // 1–3
-    }
-
-    public void GenerateMonster() {
-        int amountMonsters = (int)(Math.random() * 5) + 1; // 1–5
-        for (int i = 0; i < amountMonsters; i++) {
-            int monsterType = (int)(Math.random() * 3);
-            switch (monsterType) {
-                case 0: monsters.add(new Zombie(difficulty));
-                break;
-                case 1: monsters.add(new Skeleton(difficulty));
-                break;
-                case 2: monsters.add(new Spider(difficulty));
-                break;
+    public void generateEntities() {
+        int count = (int)(Math.random() * 5) + 1;
+        for (int i = 0; i < count; i++) {
+            int type = (int)(Math.random() * 3);
+            switch (type) {
+                case 0: entities.add(new Zombie(difficulty)); break;
+                case 1: entities.add(new Skeleton(difficulty)); break;
+                case 2: entities.add(new Spider(difficulty)); break;
             }
         }
     }
 
     public void dropLoot() {
-        int dropCount = (int)(Math.random() * 2) + 1; // 1–2 items
+        int dropCount = (int)(Math.random() * 2) + 1;
         for (int i = 0; i < dropCount; i++) {
             if (Math.random() < 0.5) {
                 roomItems.add(new Potion("Health Potion", 10));
@@ -45,7 +38,7 @@ public class Room {
     }
 
     public void printLoot() {
-        System.out.println("Loot i rummet:");
+        System.out.println("🎁 Loot i rummet:");
         for (Item item : roomItems) {
             System.out.println("- " + item);
         }
