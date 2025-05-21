@@ -1,21 +1,27 @@
 import java.util.ArrayList;
 import java.util.List;
 
+/*
+ Dungeonen är en samling av rum. Här sker komposition på högre nivå.
+ */
 public class Dungeon {
     private List<Room> rooms = new ArrayList<>();
 
-    public Dungeon(int numberOfRooms) {
-        for (int i = 0; i < numberOfRooms; i++) {
-            rooms.add(new Room());
+    public Dungeon(int numRooms) {
+        for (int i = 0; i < numRooms; i++) {
+            Room r = new Room();
+            r.generateMonsters();
+            rooms.add(r);
         }
     }
 
-    public Room getRoom(int index) {
-        if (index >= 0 && index < rooms.size()) return rooms.get(index);
-        return null;
+    /** @return listan av rum */
+    public List<Room> getRooms() {
+        return rooms;
     }
 
-    public int getRoomCount() {
+    /** @return antalet rum */
+    public int size() {
         return rooms.size();
     }
 }

@@ -6,12 +6,13 @@ public class Potion extends Item {
         this.healAmount = healAmount;
     }
 
+    // @return hur mycket HP denna potion återställer
     public int getHealAmount() {
         return healAmount;
     }
 
     @Override
     public String toString() {
-        return name + " (Healar " + healAmount + " HP)";
+        return getName() + " (Healar " + healAmount + " HP)";
     }
 }

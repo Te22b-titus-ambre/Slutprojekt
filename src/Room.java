@@ -1,46 +1,61 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+//Rum i dungeonen. Har samlingar av Monster och Item (komposition).
 public class Room {
-    public List<Entity> entities = new ArrayList<>();
-    public List<Item> roomItems = new ArrayList<>();
-    public String description;
-    public int difficulty;
+    private List<Monster> monsters = new ArrayList<>();
+    private List<Item> loot = new ArrayList<>();
+    private int difficulty;
+    private String description;
 
     public Room() {
-        difficulty = (int)(Math.random() * 3) + 1;
-        this.description = "Ett rum av svårighetsgrad " + difficulty + ".";
-        generateEntities();
+        this.difficulty = new Random().nextInt(3) + 1; // 1–3
+        this.description = "Ett rum av svårighetsgrad " + difficulty;
     }
 
-    public void generateEntities() {
-        int count = (int)(Math.random() * 5) + 1;
+    // Genererar 1–5 monster med slumpad typ och tier
+    public void generateMonsters() {
+        int count = new Random().nextInt(5) + 1;
         for (int i = 0; i < count; i++) {
-            int type = (int)(Math.random() * 3);
-            switch (type) {
-                case 0: entities.add(new Zombie(difficulty)); break;
-                case 1: entities.add(new Skeleton(difficulty)); break;
-                case 2: entities.add(new Spider(difficulty)); break;
+            int type = new Random().nextInt(3);
+            int tier = Monster.randomTier();
+            if (type == 0) {
+                monsters.add(new Zombie(tier));
+            } else if (type == 1) {
+                monsters.add(new Skeleton(tier));
+            } else {
+                monsters.add(new Spider(tier));
             }
         }
     }
 
+    // Släpper loot (1–2 items) efter rummet är rensat
     public void dropLoot() {
-        int dropCount = (int)(Math.random() * 2) + 1;
-        for (int i = 0; i < dropCount; i++) {
-            if (Math.random() < 0.5) {
-                roomItems.add(new Potion("Health Potion", 10));
+        int count = new Random().nextInt(2) + 1;
+        for (int i = 0; i < count; i++) {
+            if (new Random().nextBoolean()) {
+                loot.add(new Potion("Health Potion", 10));
             } else {
-                roomItems.add(new Weapon("Iron Sword", 2));
+                loot.add(new Weapon("Iron Sword", 2));
             }
         }
         System.out.println("Rummet är rensat! Loot har droppats.");
     }
 
-    public void printLoot() {
-        System.out.println("🎁 Loot i rummet:");
-        for (Item item : roomItems) {
-            System.out.println("- " + item);
-        }
+    public List<Monster> getMonsters() {
+        return monsters;
+    }
+
+    public List<Item> getLoot() {
+        return loot;
+    }
+
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

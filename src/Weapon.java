@@ -6,12 +6,13 @@ public class Weapon extends Item {
         this.attackBonus = attackBonus;
     }
 
+    // @return bonus som läggs på attack
     public int getAttackBonus() {
         return attackBonus;
     }
 
     @Override
     public String toString() {
-        return name + " (Attack +" + attackBonus + ")";
+        return getName() + " (Attack +" + attackBonus + ")";
     }
 }
