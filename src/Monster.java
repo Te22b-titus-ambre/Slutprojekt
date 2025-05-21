@@ -1,10 +1,13 @@
 import java.util.Random;
 
-// Abstrakt klass för monster. Har tier, hp och attack.
+/**
+ * Abstrakt basklass för alla monster.
+ */
 public abstract class Monster extends Entity {
     private int tier;
     private int hp;
     private int attack;
+    private Random rnd = new Random();
 
     public Monster(String name, int tier) {
         super(name);
@@ -13,10 +16,21 @@ public abstract class Monster extends Entity {
         this.attack = 1 + tier;
     }
 
-    // Slumpmässigt tier-attribut (1–3)
+    /** Slumpmässigt tier‐värde 1–3 */
     public static int randomTier() {
         return new Random().nextInt(3) + 1;
     }
+
+    /** Vanlig attack */
+    public void attack(Entity target) {
+        System.out.println(getName() + " attackerar för " + attack + " skada.");
+        target.takeDamage(attack);
+    }
+
+    /**
+     * Specialförmåga, implementeras av varje subklass.
+     */
+    public abstract void specialAbility(Entity target);
 
     @Override
     public void takeDamage(int amount) {
@@ -29,17 +43,20 @@ public abstract class Monster extends Entity {
         return hp > 0;
     }
 
-    //@return hur mycket skada monstret gör
+    /** Hjälpmetod för självläkning */
+    protected void heal(int amount) {
+        hp += amount;
+        System.out.println(getName() + " läker " + amount + " HP! HP nu: " + hp);
+    }
+
     public int getAttack() {
         return attack;
     }
 
-    // @return monstrets tier
     public int getTier() {
         return tier;
     }
 
-    // @return återstående HP
     public int getHp() {
         return hp;
     }
