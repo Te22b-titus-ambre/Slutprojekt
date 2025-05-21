@@ -1,83 +1,83 @@
 import java.util.InputMismatchException;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
+// Startpunkt för spelet. Hanterar all användarinteraktion med felkontroll.
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Random rnd = new Random();
-
-        // Exempelrum med några monster
-        Room room = new Room();
-        room.generateMonsters();
-
+        Dungeon dungeon = new Dungeon(5);
         Player player = new Player("Hjälten");
-        System.out.println(player.getName() + " har " + player.getHp() + " HP och attack " + player.getAttack() + ".");
-        System.out.println("Du går in i ett rum med svårighetsgrad " + room.getDifficulty() + " och "
-                + room.getMonsters().size() + " monster.\n");
 
-        List<Monster> monsters = room.getMonsters();
-        while (!monsters.isEmpty() && player.isAlive()) {
-            Monster m = monsters.get(0);
-            System.out.println("Ett " + m + " dyker upp!");
+        System.out.println("Dungeonen består av " + dungeon.size() + " rum.");
+        System.out.println(player.getName() + " startar med "
+                + player.getHp() + " HP och " + player.getAttack() + " attack.");
 
-            // Spelarens val
-            int action = 0;
-            do {
-                try {
-                    System.out.println("1=Attackera   2=Drick potion   3=Fly");
-                    System.out.print("Välj: ");
-                    action = sc.nextInt();
-                    sc.nextLine();
-                } catch (InputMismatchException ex) {
-                    System.out.println("Ogiltigt val, ange en siffra!");
-                    sc.nextLine();
-                }
-            } while (action < 1 || action > 3);
+        for (int idx = 0; idx < dungeon.size() && player.isAlive(); idx++) {
+            Room room = dungeon.getRooms().get(idx);
+            System.out.println();
+            System.out.println("Du går in i rum " + idx
+                    + " (Svårighetsgrad " + room.getDifficulty() + ")");
+            System.out.println(room.getDescription());
 
-            if (action == 3) {
-                System.out.println("Du flydde. Spelet avslutas.");
-                sc.close();
-                return;
-            } else if (action == 2) {
-                player.usePotion();
-            } else {
-                // spelaren attackerar
-                System.out.println(player.getName() + " attackerar för " + player.getAttack() + " skada.");
-                m.takeDamage(player.getAttack());
-            }
+            List<Monster> monsters = room.getMonsters();
+            while (!monsters.isEmpty() && player.isAlive()) {
+                Monster m = monsters.get(0);
+                System.out.println();
+                System.out.println("Ett " + m.getName()
+                        + " dyker upp! (HP: " + m.getHp() + ")");
 
-            // Monsterets tur
-            if (m.isAlive()) {
-                if (rnd.nextDouble() < 0.3) {
-                    m.specialAbility(player);
+                int action = 0;
+                do {
+                    try {
+                        System.out.println("1=Attackera  2=Drick potion  3=Fly");
+                        System.out.print("Välj: ");
+                        action = sc.nextInt();
+                        sc.nextLine();
+                    } catch (InputMismatchException ex) {
+                        System.out.println("Ogiltigt val, ange en siffra!");
+                        sc.nextLine();
+                    }
+                } while (action < 1 || action > 3);
+
+                if (action == 1) {
+                    m.takeDamage(player.getAttack());
+                    if (!m.isAlive()) {
+                        System.out.println("Monstret besegrat!");
+                        monsters.remove(0);
+                    } else {
+                        player.takeDamage(m.getAttack());
+                    }
+                } else if (action == 2) {
+                    player.usePotion();
                 } else {
-                    m.attack(player);
-                }
-                if (!player.isAlive()) {
-                    System.out.println(player.getName() + " dog. Spelet är över.");
+                    System.out.println("Du flydde. Spelet avslutas.");
                     sc.close();
                     return;
                 }
-            } else {
-                System.out.println(m.getName() + " besegrad!\n");
-                monsters.remove(0);
+            }
+
+            if (player.isAlive()) {
+                System.out.println();
+                System.out.println("Rummet är rensat!");
+                room.dropLoot();
+                room.getLoot().forEach(item -> System.out.println("- " + item));
+                System.out.print("Plocka upp allt? (j/n): ");
+                String pick = sc.nextLine();
+                if (pick.equalsIgnoreCase("j")) {
+                    room.getLoot().forEach(player::addItem);
+                }
             }
         }
 
-        // Rensat rum + loot
-        System.out.println("Rummet är rensat!");
-        room.dropLoot();
-        room.getLoot().forEach(item -> System.out.println("- " + item));
-        System.out.print("Vill du plocka upp allt? (j/n): ");
-        String pick = sc.nextLine();
-        if (pick.equalsIgnoreCase("j")) {
-            room.getLoot().forEach(player::addItem);
+        if (player.isAlive()) {
+            System.out.println();
+            System.out.println("Du klarade hela dungeonen!");
+            player.showInventory();
+        } else {
+            System.out.println();
+            System.out.println("Du dog i dungeonen.");
         }
-
-        System.out.println("\nÄventyret är slut. Slutstatus:");
-        player.showInventory();
         sc.close();
     }
 }

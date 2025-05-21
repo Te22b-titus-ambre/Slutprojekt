@@ -1,9 +1,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-/*
- Dungeonen är en samling av rum. Här sker komposition på högre nivå.
- */
+//Dungeonen är en samling av rum.
+
 public class Dungeon {
     private List<Room> rooms = new ArrayList<>();
 
@@ -15,12 +14,12 @@ public class Dungeon {
         }
     }
 
-    /** @return listan av rum */
+    // @return listan av rum
     public List<Room> getRooms() {
         return rooms;
     }
 
-    /** @return antalet rum */
+    // @return antalet rum
     public int size() {
         return rooms.size();
     }

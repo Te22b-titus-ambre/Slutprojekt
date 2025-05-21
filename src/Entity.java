@@ -15,4 +15,6 @@ public abstract class Entity {
 
     // @return true om entiteten fortfarande lever
     public abstract boolean isAlive();
+
+
 }
