@@ -22,9 +22,4 @@ public class Inventory<T> {
     public List<T> getAll() {
         return new ArrayList<>(items);
     }
-
-    // @return om inventariet är tomt
-    public boolean isEmpty() {
-        return items.isEmpty();
-    }
 }
